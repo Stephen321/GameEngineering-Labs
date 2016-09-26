@@ -1,0 +1,23 @@
+
+public class Consumer extends Thread {
+	int[] b;
+
+	@Override
+	public synchronized void start() {
+		System.out.println("Starting Consumer thread.");
+		b = new int[Lab2.n]
+		super.start();
+	}
+	
+	@Override
+	public void run() {
+		while (Lab2.p < Lab2.n) {
+			while (! (Lab2.p > Lab2.c));
+			b[Lab2.c] = Lab2.buf;
+			Lab2.c = Lab2.c + 1;
+			System.out.println("c: " + Lab2.c +  " p: " + Lab2.p + " buf: " + Lab2.buf);
+		} 
+		
+	}
+	
+}

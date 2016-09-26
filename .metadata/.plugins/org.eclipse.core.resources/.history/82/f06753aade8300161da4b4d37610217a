@@ -1,0 +1,21 @@
+
+public class Producer extends Thread {
+	int[] a = new int[Lab2.n];
+	
+	@Override
+	public synchronized void start() {
+		System.out.println("test");
+		super.start();
+	}
+
+	@Override
+	public void run() {
+		while (Lab2.p < Lab2.n) {
+			while (Lab2.p != Lab2.c);
+			Lab2.buf = a[Lab2.p];
+			Lab2.p = Lab2.p + 1;
+		} 
+		
+	}
+	
+}
