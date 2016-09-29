@@ -11,7 +11,7 @@ public class Lab1 {
 		DeadLockSolution2
 	}
 	
-	public static State state = State.DeadLockSolution2;
+	public static State state = State.DeadLock;
 	
 	public static void main(String[] args) {
 		//Create two threads

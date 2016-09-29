@@ -2,48 +2,40 @@ import java.util.Arrays;
 import java.util.Random;
 
 public class Producer extends Thread {
-	private int id; //unique identifier for this thread
-	public int[] a; //list of random ints produced
-	private int counter; //counter to keep track of which int to put into the shared buffer
-	private Random rand; 
+	int[] a;
 	
-	public void start(int id) {
-		a = new int[Lab1.ArraySize]; 
-		this.id = id;
-		counter = 0;
-		rand = new Random();
+	public synchronized void start() {
+		a = new int[Lab1.n];
 		
-		//populate int array with random nums
-		for (int i = 0; i < Lab1.ArraySize; i++){
+		Random rand = new Random();
+		for (int i = 0; i < Lab1.n; i++){ //fill array with random numbers between 0-99
 			a[i] = rand.nextInt(100);
 		}
-		
-		System.out.println("Starting Producer thread " + this.id + ".\nValues in a:");
+
+		System.out.println("Starting Producer thread.\nValues in a:");
 		System.out.println(Arrays.toString(a));
 		super.start();
 	}
 
 	@Override
 	public void run() {
-		//keep looping while we still have ints that havnt been consumed
-		while(counter < Lab1.ArraySize){
-            int data = a[counter]; //get data we currently want to produce
-        	System.out.println("producer " + id + " produced: " + data);
-            try {//put data into queue, if it is full then it will wait until there is space
-            	Lab1.sharedBuffer.put(data);
-            } catch (InterruptedException e) {
-               e.printStackTrace();
-            }
-        	counter++; //increment counter as this index has been shared
-         }
-
-	 	try {
-	 		Thread.sleep(10 * id); //delay to try print out nicer
-	 	} catch (InterruptedException e) {
+		while (Lab1.p < Lab1.n) {
+			while (Lab1.p != Lab1.c); //spin until p == c. This means we are ready to produce
+			Lab1.buf = a[Lab1.p]; //store value from local int array into buf as its ready to be consumed
+			System.out.println("Producer produced: " + Lab1.buf);
+			Lab1.p = Lab1.p + 1;
+		} 
+		
+		try {
+			sleep(50);
+		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Finished Producer thread " + this.id + ".\nFinal Values in a:");
+		
+		System.out.println("Producer thread has finished.\nFinal values in a:");
 		System.out.println(Arrays.toString(a));
+		return;
+		
 	}
 	
 }
