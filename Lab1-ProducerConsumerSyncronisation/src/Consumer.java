@@ -1,43 +1,41 @@
+import java.util.Arrays;
 
 public class Consumer extends Thread {
-	int[] b;
-	int n;
-	int offSet;
+	private int id; //unique identifier for this thread
+	public int[] b; //list of ints consumed
+	private int counter; //counter to keep track of which int we are taking out of the shared buffer
 	
-	public synchronized void start(int size, int _offSet) {
-		System.out.println("Starting Consumer thread.\nValues in b:");
-		n = size;
-		offSet = _offSet;
-		b = new int[n];
+	public void start(int id) {
+		b = new int[Lab1.ArraySize];
+		this.id = id;
+		counter = 0;
 		
-		for (int i = 0; i < n; i++){
-			System.out.print(b[i] + ", ");
-		}
-		System.out.println();
+		System.out.println("Starting Consumer thread " + this.id + ".\nValues in b:");
+		System.out.println(Arrays.toString(b));
 		super.start();
 	}
 	
 	@Override
 	public void run() {
-		while (Lab1.p < n) {
-			while (! (Lab1.p > Lab1.c));
-			b[Lab1.c] = Lab1.buf;
-			Lab1.c = Lab1.c + 1;
-			
-		} 
+		//keep looping while we still have space to consume ints
+		while(counter < Lab1.ArraySize){
+            try {//get element out of queue or wait if there is none
+            	int data = Lab1.sharedBuffer.take();
+            	System.out.println("consumer " + id + " consumed: " + data);
+            	b[counter] = data; //put into our array 
+            } catch (InterruptedException e) {
+               e.printStackTrace();
+            }
+        	counter++;//increment counter as this index has been consumed
+         }
 		
-		try {
-			sleep((Lab1.Millis * 2) * offSet);
-		} catch (InterruptedException e) {
+	 	try {
+	 		Thread.sleep(20 * id);//delay to try print out nicer
+	 	} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
-		System.out.println("Consumer thread has finished.\nFinal values in b:");
-		for (int i = 0; i < n; i++){
-			System.out.print(b[i] + ", ");
-		}
-		System.out.println();
-		return;
+		System.out.println("Finished Consumer thread " + this.id + ".\nFinal Values in b:");
+		System.out.println(Arrays.toString(b));
 		
 	}
 	
